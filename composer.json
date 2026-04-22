@@ -1,0 +1,27 @@
+{
+    "name": "gurento/kafka-consumer-filament",
+    "description": "Filament UI package for gurento/kafka-consumer.",
+    "type": "library",
+    "license": "MIT",
+    "keywords": ["laravel", "filament", "kafka", "admin"],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^4.0|^5.0",
+        "illuminate/support": "^11.0|^12.0",
+        "gurento/kafka-consumer": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Gurento\\KafkaConsumerFilament\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Gurento\\KafkaConsumerFilament\\KafkaConsumerFilamentServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
