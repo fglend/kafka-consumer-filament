@@ -2,8 +2,8 @@
 
 namespace Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Pages;
 
-use Filament\Resources\Pages\CreateRecord;
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\KafkaTopicResource;
+use Filament\Resources\Pages\CreateRecord;
 
 class CreateKafkaTopic extends CreateRecord
 {

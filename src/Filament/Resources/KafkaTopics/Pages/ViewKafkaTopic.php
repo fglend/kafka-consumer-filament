@@ -2,14 +2,14 @@
 
 namespace Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Pages;
 
+use Gurento\KafkaConsumer\Actions\MarkKafkaTopicHealthyAction;
+use Gurento\KafkaConsumer\Actions\ReconsumeKafkaTopicFailuresAction;
+use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\KafkaTopicResource;
+use Gurento\KafkaConsumer\Models\KafkaTopic;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Gurento\KafkaConsumer\Actions\MarkKafkaTopicHealthyAction;
-use Gurento\KafkaConsumer\Actions\ReconsumeKafkaTopicFailuresAction;
-use Gurento\KafkaConsumer\Models\KafkaTopic;
-use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\KafkaTopicResource;
 
 class ViewKafkaTopic extends ViewRecord
 {
@@ -24,8 +24,9 @@ class ViewKafkaTopic extends ViewRecord
                 ->color('warning')
                 ->form([
                     \Filament\Forms\Components\TextInput::make('limit')
-                        ->numeric()
+                        ->label('Retry Limit')
                         ->default(50)
+                        ->numeric()
                         ->minValue(1)
                         ->maxValue(500)
                         ->required(),
@@ -47,7 +48,10 @@ class ViewKafkaTopic extends ViewRecord
                 ->action(function (KafkaTopic $record): void {
                     app(MarkKafkaTopicHealthyAction::class)->execute($record);
 
-                    Notification::make()->title('Topic marked healthy')->success()->send();
+                    Notification::make()
+                        ->title('Topic marked healthy')
+                        ->success()
+                        ->send();
                 }),
             EditAction::make(),
         ];
