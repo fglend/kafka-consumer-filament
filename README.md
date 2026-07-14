@@ -25,11 +25,46 @@ A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`]
 
 ## Installation
 
+### 1. Install the packages
+
+This plugin is the UI layer for [`gurento/kafka-consumer`](https://packagist.org/packages/gurento/kafka-consumer), which does the actual consuming. Install both:
+
 ```bash
 composer require gurento/kafka-consumer gurento/kafka-consumer-filament
 ```
 
-Then register the plugin in your Filament panel provider:
+### 2. Set up `gurento/kafka-consumer`
+
+Publish the config and migrations, then migrate:
+
+```bash
+php artisan vendor:publish --tag=kafka-consumer-config
+php artisan vendor:publish --tag=kafka-consumer-migrations
+php artisan migrate
+```
+
+This creates two tables:
+
+- `kafka_topics` — topic-to-model mappings, counters, and health metadata (what this plugin manages)
+- `kafka_consume_logs` — per-message processing logs (what the logs viewer reads)
+
+Review `config/kafka-consumer.php` for defaults (consumer group, retry attempts, backoff, health thresholds). The consumer itself ships with a plug-and-play engine based on `mateusjunges/laravel-kafka` — make sure the `rdkafka` PHP extension is installed and your broker settings are configured in the host app's `config/kafka.php`.
+
+Add your Kafka connection settings to `.env`:
+
+```dotenv
+KAFKA_BROKERS=localhost:9092
+KAFKA_CONSUMER_GROUP_ID=app-consumer
+KAFKA_DEBUG=false
+```
+
+- `KAFKA_BROKERS` — comma-separated broker list (host:port)
+- `KAFKA_CONSUMER_GROUP_ID` — default consumer group used when `--group` is not passed
+- `KAFKA_DEBUG` — set to `true` to enable verbose librdkafka debug output while troubleshooting
+
+### 3. Register the plugin
+
+In your Filament panel provider:
 
 ```php
 use Gurento\KafkaConsumerFilament\Filament\Plugins\KafkaConsumerPlugin;
@@ -44,6 +79,16 @@ public function panel(Panel $panel): Panel
 ```
 
 That's it — a **Kafka Topics** resource appears in your panel's navigation.
+
+### 4. Start consuming
+
+Create a topic mapping in the UI, then run the consumer (as a daemon under Supervisor/systemd in production):
+
+```bash
+php artisan gurento:kafka-consume
+```
+
+See the [`gurento/kafka-consumer` README](https://github.com/gurento/kafka-consumer#readme) for command options (`--topics`, `--group`, `--from-beginning`, `--stop-on-empty`, `--reconsume-failed`), replay patterns, events, and custom engines.
 
 ## Customization
 
