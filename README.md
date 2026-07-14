@@ -1,14 +1,27 @@
 # Kafka Consumer Filament
 
-`gurento/kafka-consumer-filament` is the Filament admin UI companion for `gurento/kafka-consumer`.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/gurento/kafka-consumer-filament.svg?style=flat-square)](https://packagist.org/packages/gurento/kafka-consumer-filament)
+[![Total Downloads](https://img.shields.io/packagist/dt/gurento/kafka-consumer-filament.svg?style=flat-square)](https://packagist.org/packages/gurento/kafka-consumer-filament)
+[![License](https://img.shields.io/github/license/gurento/kafka-consumer-filament?style=flat-square)](LICENSE)
 
-It provides a ready Kafka operations interface for:
+A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`](https://packagist.org/packages/gurento/kafka-consumer) — manage Kafka topic mappings, monitor consumer health, and replay failed messages without leaving your admin panel.
 
-- managing topic configurations
-- viewing consume logs
-- running re-consume actions from UI
+## Features
 
-Compatible with Filament v4 and v5.
+- **Topic management** — full CRUD for topic-to-model mappings, field maps, and relation syncs
+- **Live monitoring** — auto-polling table with consumed/failed counters, failure rate, heartbeat, lag, and health badges
+- **Consume logs** — per-message log viewer with payload inspection, Kafka partition/offset/key metadata, and status filters
+- **One-click operations** — re-consume failed messages, mark topics healthy, and reset counters from the UI
+- **Fully customizable** — navigation label, icon, group, badge, slug, labels, and polling are all configurable via a fluent plugin API
+
+## Requirements
+
+| Dependency | Version |
+|---|---|
+| PHP | 8.2+ |
+| Laravel | 11 / 12 |
+| Filament | 4.x / 5.x |
+| gurento/kafka-consumer | ^1.0 |
 
 ## Installation
 
@@ -16,22 +29,25 @@ Compatible with Filament v4 and v5.
 composer require gurento/kafka-consumer gurento/kafka-consumer-filament
 ```
 
-## Register Plugin
-
-In your Filament panel provider:
+Then register the plugin in your Filament panel provider:
 
 ```php
 use Gurento\KafkaConsumerFilament\Filament\Plugins\KafkaConsumerPlugin;
 
-return $panel
-    ->plugins([
-        KafkaConsumerPlugin::make(),
-    ]);
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        ->plugins([
+            KafkaConsumerPlugin::make(),
+        ]);
+}
 ```
 
-## Customizing the Resource
+That's it — a **Kafka Topics** resource appears in your panel's navigation.
 
-All presentation elements are dynamic. Configure them fluently on the plugin — every setter accepts a plain value or a `Closure`:
+## Customization
+
+Every presentation element is dynamic. Configure it fluently on the plugin — each setter accepts a plain value or a `Closure`:
 
 ```php
 KafkaConsumerPlugin::make()
@@ -50,54 +66,61 @@ KafkaConsumerPlugin::make()
     ]),
 ```
 
-Every option is optional — `KafkaConsumerPlugin::make()` alone keeps the previous defaults (label `Kafka Topics`, icon `heroicon-o-arrow-down-on-square`, group `System`, `10s` polling, `app/Models` scan for the dropdown).
+### Available options
 
-## What It Registers
+| Method | Type | Default | Description |
+|---|---|---|---|
+| `navigationLabel()` | `string\|Closure` | `Kafka Topics` | Sidebar navigation title |
+| `navigationIcon()` | `string\|BackedEnum\|Closure` | `heroicon-o-arrow-down-on-square` | Navigation icon |
+| `navigationGroup()` | `string\|UnitEnum\|Closure` | `System` | Navigation group |
+| `navigationSort()` | `int\|Closure` | Filament default | Sort order within the group |
+| `navigationBadge()` | `bool\|Closure` | `false` | Show pending-retry count as a badge |
+| `modelLabel()` / `pluralModelLabel()` | `string\|Closure` | `kafka topic(s)` | Record labels used across pages |
+| `slug()` | `string\|Closure` | `kafka-topics` | Resource URL slug |
+| `tablePollInterval()` | `string\|null\|Closure` | `10s` | Table auto-refresh interval; `null` disables |
+| `modelOptions()` | `array\|Closure` | `app/Models` scan | Options for the target-model dropdown |
 
-- `Kafka Topics` resource
-- CRUD pages for topic mappings
-- `Consume Logs` relation manager
-- operations actions (for re-consume/health workflows depending on your setup)
+All options are optional — `KafkaConsumerPlugin::make()` alone keeps the defaults above.
 
 ## Typical Workflow
 
-1. Open `Kafka Topics` in Filament.
-2. Create topic mapping:
-   - topic name
-   - target model class
-   - upsert key
-   - field mappings
-3. Run consumer command:
+1. Open **Kafka Topics** in your panel.
+2. Create a topic mapping: topic name, target model, upsert key, field mappings, optional relation syncs.
+3. Run the consumer:
 
-```bash
-php artisan gurento:kafka-consume
-```
+   ```bash
+   php artisan gurento:kafka-consume
+   ```
 
-4. Monitor logs in the resource relation manager.
-5. Re-consume failed messages when needed.
+4. Monitor counters, health, and logs in the resource (the table auto-refreshes).
+5. Re-consume failed messages from the row action or the logs relation manager when needed.
 
-## Security and Access
+## What It Registers
 
-This package only provides UI classes.
+- `KafkaTopicResource` — list, create, view, and edit pages
+- `LogsRelationManager` — read-only consume-log browser with payload inspection and per-log retry
+- Row actions: **Re-consume Failed**, **Mark Healthy**, **Reset Counters**
 
-You should define policies/permissions in host app to restrict who can:
+## Security & Access
+
+This package ships UI classes only — it does not impose authorization. Define policies/permissions in your host app to control who can:
 
 - edit topic mappings
 - run replay actions
-- inspect payload/error logs
+- inspect payload and error logs
 
 ## Troubleshooting
 
-### Resource not visible
+**Resource not visible** — ensure the plugin is registered on the panel you're viewing, then run `php artisan optimize:clear`.
 
-- Ensure plugin is added to the same panel you are using.
-- Run `php artisan optimize:clear`.
+**Class not found** — confirm both packages are installed and run `composer dump-autoload`.
 
-### Class not found errors
+**Customizations not applying** — plugin options are read at runtime from the current panel; make sure you configure them on the same `KafkaConsumerPlugin::make()` instance passed to `->plugins([...])`.
 
-- Confirm both packages are installed.
-- Run `composer dump-autoload`.
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## License
 
-MIT
+The MIT License (MIT). See [LICENSE](LICENSE) for details.
