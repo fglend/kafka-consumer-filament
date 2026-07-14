@@ -29,6 +29,29 @@ return $panel
     ]);
 ```
 
+## Customizing the Resource
+
+All presentation elements are dynamic. Configure them fluently on the plugin — every setter accepts a plain value or a `Closure`:
+
+```php
+KafkaConsumerPlugin::make()
+    ->navigationLabel('Event Streams')            // sidebar title
+    ->navigationIcon('heroicon-o-queue-list')     // hero icon (string or BackedEnum)
+    ->navigationGroup('Integrations')
+    ->navigationSort(5)
+    ->navigationBadge()                           // badge showing pending retries
+    ->modelLabel('Stream')
+    ->pluralModelLabel('Streams')
+    ->slug('event-streams')                       // URL: /admin/event-streams
+    ->tablePollInterval('30s')                    // null disables auto-refresh
+    ->modelOptions(fn (): array => [              // restrict target-model dropdown
+        \App\Models\Office::class => 'Office',
+        \App\Models\Employee::class => 'Employee',
+    ]),
+```
+
+Every option is optional — `KafkaConsumerPlugin::make()` alone keeps the previous defaults (label `Kafka Topics`, icon `heroicon-o-arrow-down-on-square`, group `System`, `10s` polling, `app/Models` scan for the dropdown).
+
 ## What It Registers
 
 - `Kafka Topics` resource

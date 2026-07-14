@@ -2,6 +2,7 @@
 
 namespace Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics;
 
+use Gurento\KafkaConsumerFilament\Filament\Plugins\KafkaConsumerPlugin;
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Pages\CreateKafkaTopic;
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Pages\EditKafkaTopic;
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Pages\ListKafkaTopics;
@@ -10,24 +11,85 @@ use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\RelationManager
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Schemas\KafkaTopicForm;
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Schemas\KafkaTopicInfolist;
 use Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Tables\KafkaTopicsTable;
+use Gurento\KafkaConsumer\Models\KafkaConsumeLog;
 use Gurento\KafkaConsumer\Models\KafkaTopic;
 use BackedEnum;
+use Filament\Panel;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 class KafkaTopicResource extends Resource
 {
     protected static ?string $model = KafkaTopic::class;
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-arrow-down-on-square';
-
     protected static ?string $recordTitleAttribute = 'topic';
 
-    protected static ?string $navigationLabel = 'Kafka Topics';
+    protected static function plugin(): ?KafkaConsumerPlugin
+    {
+        return KafkaConsumerPlugin::get();
+    }
 
-    protected static string|UnitEnum|null $navigationGroup = 'System';
+    public static function getNavigationIcon(): string|BackedEnum|null
+    {
+        return static::plugin()?->getNavigationIcon() ?? 'heroicon-o-arrow-down-on-square';
+    }
+
+    public static function getNavigationLabel(): string
+    {
+        return static::plugin()?->getNavigationLabel() ?? 'Kafka Topics';
+    }
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return static::plugin()?->getNavigationGroup() ?? 'System';
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return static::plugin()?->getNavigationSort() ?? parent::getNavigationSort();
+    }
+
+    public static function getModelLabel(): string
+    {
+        return static::plugin()?->getModelLabel() ?? parent::getModelLabel();
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return static::plugin()?->getPluralModelLabel() ?? parent::getPluralModelLabel();
+    }
+
+    public static function getSlug(?Panel $panel = null): string
+    {
+        return static::plugin()?->getSlug() ?? parent::getSlug($panel);
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        if (! static::plugin()?->hasNavigationBadge()) {
+            return null;
+        }
+
+        $pending = KafkaConsumeLog::query()
+            ->where('status', 'failed')
+            ->where('retryable', true)
+            ->where(function (Builder $query): void {
+                $query->whereNull('next_retry_at')
+                    ->orWhere('next_retry_at', '<=', now());
+            })
+            ->whereHas('topic', fn (Builder $query) => $query->where('is_active', true))
+            ->count();
+
+        return $pending > 0 ? (string) $pending : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'warning';
+    }
 
     public static function form(Schema $schema): Schema
     {

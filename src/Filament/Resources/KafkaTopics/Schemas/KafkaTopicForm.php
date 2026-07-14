@@ -2,6 +2,7 @@
 
 namespace Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Schemas;
 
+use Gurento\KafkaConsumerFilament\Filament\Plugins\KafkaConsumerPlugin;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -14,9 +15,15 @@ use Filament\Schemas\Schema;
 
 class KafkaTopicForm
 {
-    /** Well-known model classes for the dropdown. */
+    /** Model classes for the dropdown — plugin override first, then app/Models scan. */
     private static function modelOptions(): array
     {
+        $pluginOptions = KafkaConsumerPlugin::get()?->getModelOptions();
+
+        if ($pluginOptions !== null) {
+            return $pluginOptions;
+        }
+
         return collect(glob(app_path('Models/*.php')))
             ->mapWithKeys(function (string $path): array {
                 $class = 'App\\Models\\' . pathinfo($path, PATHINFO_FILENAME);

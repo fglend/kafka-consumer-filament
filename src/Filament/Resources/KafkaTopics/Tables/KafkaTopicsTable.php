@@ -2,6 +2,7 @@
 
 namespace Gurento\KafkaConsumerFilament\Filament\Resources\KafkaTopics\Tables;
 
+use Gurento\KafkaConsumerFilament\Filament\Plugins\KafkaConsumerPlugin;
 use Gurento\KafkaConsumer\Actions\MarkKafkaTopicHealthyAction;
 use Gurento\KafkaConsumer\Actions\ReconsumeKafkaTopicFailuresAction;
 use Gurento\KafkaConsumer\Actions\ResetKafkaTopicCountersAction;
@@ -22,8 +23,14 @@ class KafkaTopicsTable
 {
     public static function configure(Table $table): Table
     {
+        $plugin = KafkaConsumerPlugin::get();
+        $pollInterval = $plugin ? $plugin->getTablePollInterval() : '10s';
+
+        if ($pollInterval !== null) {
+            $table->poll($pollInterval);
+        }
+
         return $table
-            ->poll('10s')
             ->columns([
                 TextColumn::make('topic')
                     ->searchable()
