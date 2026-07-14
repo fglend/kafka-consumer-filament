@@ -127,6 +127,58 @@ KafkaConsumerPlugin::make()
 
 All options are optional — `KafkaConsumerPlugin::make()` alone keeps the defaults above.
 
+## Creating a Topic Mapping
+
+The create/edit form covers everything a topic needs to go from raw Kafka payload to an upserted Eloquent record — no code required.
+
+### Topic Configuration
+
+| Field | Description |
+|---|---|
+| **Kafka Topic** | The topic name to consume (e.g. `HR_APP.LIVE.office`), unique per row |
+| **Target Model** | Eloquent model to upsert into — searchable dropdown scanned from `app/Models` (override via `modelOptions()`) |
+| **Upsert Key** | Model column used as the unique key for `updateOrCreate` (default `id`) |
+| **Exclude Payload Keys** | Top-level payload keys to strip before mapping (e.g. `old_values`, `meta`) |
+| **Active** | Toggle whether the consumer processes this topic |
+| **Retry settings** | Max re-consume attempts, retry backoff (seconds), and health stale threshold — per topic, falling back to config when unset |
+
+### Field Mapping (payload matching)
+
+A repeater that maps payload fields to model columns — each row is one `from → to` pair:
+
+| Payload Field (`from`) | Model Column (`to`) |
+|---|---|
+| `uuid` | `id` |
+| `name` | `name` |
+
+Given `{"uuid": "off-001", "name": "Accounting Office"}`, the consumer writes `id = off-001`, `name = Accounting Office` and upserts by the configured upsert key. Unmapped fields are skipped, so mappings stay explicit and reviewable. Rows collapse to a readable `uuid → id` label.
+
+### Relation Syncs (relationships)
+
+A repeater for syncing `BelongsToMany` relationships from nested arrays in the payload:
+
+| Field | Description |
+|---|---|
+| **Payload Key** | The nested array in the payload (e.g. `office_controller`) |
+| **Model Relationship** | The relationship method on the target model |
+| **Related Model** | The related Eloquent model (searchable dropdown) |
+| **Lookup Key** | Field inside each payload item used to find the related record — auto-detects `uuid` then `id` when blank |
+| **Related Model Key** | Column on the related model to match against — defaults to its primary key |
+
+Example: with payload key `office_controller` and payload
+
+```json
+{
+  "uuid": "off-001",
+  "office_controller": [
+    {"uuid": "emp-001"},
+    {"uuid": "emp-002"}
+  ]
+}
+```
+
+the consumer looks up each employee by `uuid` and calls `$office->office_controller()->sync([...])`. Items whose related record doesn't exist yet are skipped.
+
 ## Typical Workflow
 
 1. Open **Kafka Topics** in your panel.
