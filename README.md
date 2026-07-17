@@ -4,10 +4,6 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/gurento/kafka-consumer-filament.svg?style=flat-square)](https://packagist.org/packages/gurento/kafka-consumer-filament)
 [![License](https://img.shields.io/github/license/gurento/kafka-consumer-filament?style=flat-square)](LICENSE)
 [![Plumb score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/composite.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
-[![Plumb security score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/security.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
-[![Plumb maintenance score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/maintenance.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
-[![Plumb ecosystem score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/ecosystem.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
-[![Scanned by Plumb](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/scanned.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
 
 A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`](https://packagist.org/packages/gurento/kafka-consumer) — manage Kafka topic mappings, monitor consumer health, and replay failed messages without leaving your admin panel.
 
@@ -21,12 +17,12 @@ A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`]
 
 ## Requirements
 
-| Dependency | Version |
-|---|---|
-| PHP | 8.2+ |
-| Laravel | 11 / 12 / 13 |
-| Filament | 4.x / 5.x |
-| gurento/kafka-consumer | ^1.0 |
+| Dependency             | Version      |
+| ---------------------- | ------------ |
+| PHP                    | 8.2+         |
+| Laravel                | 11 / 12 / 13 |
+| Filament               | 4.x / 5.x    |
+| gurento/kafka-consumer | ^1.0         |
 
 ## Installation
 
@@ -118,17 +114,17 @@ KafkaConsumerPlugin::make()
 
 ### Available options
 
-| Method | Type | Default | Description |
-|---|---|---|---|
-| `navigationLabel()` | `string\|Closure` | `Kafka Topics` | Sidebar navigation title |
-| `navigationIcon()` | `string\|BackedEnum\|Closure` | `heroicon-o-arrow-down-on-square` | Navigation icon |
-| `navigationGroup()` | `string\|UnitEnum\|Closure` | `System` | Navigation group |
-| `navigationSort()` | `int\|Closure` | Filament default | Sort order within the group |
-| `navigationBadge()` | `bool\|Closure` | `false` | Show pending-retry count as a badge |
-| `modelLabel()` / `pluralModelLabel()` | `string\|Closure` | `kafka topic(s)` | Record labels used across pages |
-| `slug()` | `string\|Closure` | `kafka-topics` | Resource URL slug |
-| `tablePollInterval()` | `string\|null\|Closure` | `10s` | Table auto-refresh interval; `null` disables |
-| `modelOptions()` | `array\|Closure` | `app/Models` scan | Options for the target-model dropdown |
+| Method                                | Type                          | Default                           | Description                                  |
+| ------------------------------------- | ----------------------------- | --------------------------------- | -------------------------------------------- |
+| `navigationLabel()`                   | `string\|Closure`             | `Kafka Topics`                    | Sidebar navigation title                     |
+| `navigationIcon()`                    | `string\|BackedEnum\|Closure` | `heroicon-o-arrow-down-on-square` | Navigation icon                              |
+| `navigationGroup()`                   | `string\|UnitEnum\|Closure`   | `System`                          | Navigation group                             |
+| `navigationSort()`                    | `int\|Closure`                | Filament default                  | Sort order within the group                  |
+| `navigationBadge()`                   | `bool\|Closure`               | `false`                           | Show pending-retry count as a badge          |
+| `modelLabel()` / `pluralModelLabel()` | `string\|Closure`             | `kafka topic(s)`                  | Record labels used across pages              |
+| `slug()`                              | `string\|Closure`             | `kafka-topics`                    | Resource URL slug                            |
+| `tablePollInterval()`                 | `string\|null\|Closure`       | `10s`                             | Table auto-refresh interval; `null` disables |
+| `modelOptions()`                      | `array\|Closure`              | `app/Models` scan                 | Options for the target-model dropdown        |
 
 All options are optional — `KafkaConsumerPlugin::make()` alone keeps the defaults above.
 
@@ -138,23 +134,23 @@ The create/edit form covers everything a topic needs to go from raw Kafka payloa
 
 ### Topic Configuration
 
-| Field | Description |
-|---|---|
-| **Kafka Topic** | The topic name to consume (e.g. `HR_APP.LIVE.office`), unique per row |
-| **Target Model** | Eloquent model to upsert into — searchable dropdown scanned from `app/Models` (override via `modelOptions()`) |
-| **Upsert Key** | Model column used as the unique key for `updateOrCreate` (default `id`) |
-| **Exclude Payload Keys** | Top-level payload keys to strip before mapping (e.g. `old_values`, `meta`) |
-| **Active** | Toggle whether the consumer processes this topic |
-| **Retry settings** | Max re-consume attempts, retry backoff (seconds), and health stale threshold — per topic, falling back to config when unset |
+| Field                    | Description                                                                                                                 |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
+| **Kafka Topic**          | The topic name to consume (e.g. `HR_APP.LIVE.office`), unique per row                                                       |
+| **Target Model**         | Eloquent model to upsert into — searchable dropdown scanned from `app/Models` (override via `modelOptions()`)               |
+| **Upsert Key**           | Model column used as the unique key for `updateOrCreate` (default `id`)                                                     |
+| **Exclude Payload Keys** | Top-level payload keys to strip before mapping (e.g. `old_values`, `meta`)                                                  |
+| **Active**               | Toggle whether the consumer processes this topic                                                                            |
+| **Retry settings**       | Max re-consume attempts, retry backoff (seconds), and health stale threshold — per topic, falling back to config when unset |
 
 ### Field Mapping (payload matching)
 
 A repeater that maps payload fields to model columns — each row is one `from → to` pair:
 
 | Payload Field (`from`) | Model Column (`to`) |
-|---|---|
-| `uuid` | `id` |
-| `name` | `name` |
+| ---------------------- | ------------------- |
+| `uuid`                 | `id`                |
+| `name`                 | `name`              |
 
 Given `{"uuid": "off-001", "name": "Accounting Office"}`, the consumer writes `id = off-001`, `name = Accounting Office` and upserts by the configured upsert key. Unmapped fields are skipped, so mappings stay explicit and reviewable. Rows collapse to a readable `uuid → id` label.
 
@@ -162,23 +158,20 @@ Given `{"uuid": "off-001", "name": "Accounting Office"}`, the consumer writes `i
 
 A repeater for syncing `BelongsToMany` relationships from nested arrays in the payload:
 
-| Field | Description |
-|---|---|
-| **Payload Key** | The nested array in the payload (e.g. `office_controller`) |
-| **Model Relationship** | The relationship method on the target model |
-| **Related Model** | The related Eloquent model (searchable dropdown) |
-| **Lookup Key** | Field inside each payload item used to find the related record — auto-detects `uuid` then `id` when blank |
-| **Related Model Key** | Column on the related model to match against — defaults to its primary key |
+| Field                  | Description                                                                                               |
+| ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Payload Key**        | The nested array in the payload (e.g. `office_controller`)                                                |
+| **Model Relationship** | The relationship method on the target model                                                               |
+| **Related Model**      | The related Eloquent model (searchable dropdown)                                                          |
+| **Lookup Key**         | Field inside each payload item used to find the related record — auto-detects `uuid` then `id` when blank |
+| **Related Model Key**  | Column on the related model to match against — defaults to its primary key                                |
 
 Example: with payload key `office_controller` and payload
 
 ```json
 {
   "uuid": "off-001",
-  "office_controller": [
-    {"uuid": "emp-001"},
-    {"uuid": "emp-002"}
-  ]
+  "office_controller": [{ "uuid": "emp-001" }, { "uuid": "emp-002" }]
 }
 ```
 
