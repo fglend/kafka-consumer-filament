@@ -24,7 +24,7 @@ A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`]
 | Dependency | Version |
 |---|---|
 | PHP | 8.2+ |
-| Laravel | 11 / 12 |
+| Laravel | 11 / 12 / 13 |
 | Filament | 4.x / 5.x |
 | gurento/kafka-consumer | ^1.0 |
 

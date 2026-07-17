@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.1 - 2026-07-17
+
+- Laravel 13 support: `illuminate/support` constraint widened to `^11.0|^12.0|^13.0`
+
 ## 1.1.0 - 2026-07-14
 
 - Fluent plugin configuration: `navigationLabel()`, `navigationIcon()`, `navigationGroup()`, `navigationSort()`, `navigationBadge()`, `modelLabel()`, `pluralModelLabel()`, `slug()`, `tablePollInterval()`, `modelOptions()` — all accept values or closures
