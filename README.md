@@ -3,6 +3,11 @@
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/gurento/kafka-consumer-filament.svg?style=flat-square)](https://packagist.org/packages/gurento/kafka-consumer-filament)
 [![Total Downloads](https://img.shields.io/packagist/dt/gurento/kafka-consumer-filament.svg?style=flat-square)](https://packagist.org/packages/gurento/kafka-consumer-filament)
 [![License](https://img.shields.io/github/license/gurento/kafka-consumer-filament?style=flat-square)](LICENSE)
+[![Plumb score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/composite.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
+[![Plumb security score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/security.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
+[![Plumb maintenance score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/maintenance.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
+[![Plumb ecosystem score](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/ecosystem.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
+[![Scanned by Plumb](https://plumbphp.dev/badges/gurento/kafka-consumer-filament/scanned.svg)](https://plumbphp.dev/gurento/kafka-consumer-filament)
 
 A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`](https://packagist.org/packages/gurento/kafka-consumer) — manage Kafka topic mappings, monitor consumer health, and replay failed messages without leaving your admin panel.
 
