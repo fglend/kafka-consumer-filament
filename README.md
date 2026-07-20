@@ -7,6 +7,8 @@
 
 A [Filament](https://filamentphp.com) admin panel for [`gurento/kafka-consumer`](https://packagist.org/packages/gurento/kafka-consumer) — manage Kafka topic mappings, monitor consumer health, and replay failed messages without leaving your admin panel.
 
+> **Sending messages too?** Producing to Kafka has its own dedicated UI package: [`gurento/kafka-producer-filament`](https://packagist.org/packages/gurento/kafka-producer-filament). Install it alongside this package if you need both directions.
+
 ## Features
 
 - **Topic management** — full CRUD for topic-to-model mappings, field maps, and relation syncs
@@ -44,10 +46,11 @@ php artisan vendor:publish --tag=kafka-consumer-migrations
 php artisan migrate
 ```
 
-This creates two tables:
+This publishes migrations for both the consumer and producer sides of `gurento/kafka-consumer` (the producer tables are only relevant if you also install `gurento/kafka-producer-filament` or use the producer service directly):
 
-- `kafka_topics` — topic-to-model mappings, counters, and health metadata (what this plugin manages)
-- `kafka_consume_logs` — per-message processing logs (what the logs viewer reads)
+- `kafka_topics` — consumer topic-to-model mappings, counters, and health metadata (what this plugin manages)
+- `kafka_consume_logs` — per-message consume logs (what the logs viewer reads)
+- `kafka_producer_topics` / `kafka_produce_logs` — producer-side tables (see `gurento/kafka-producer-filament`)
 
 Review `config/kafka-consumer.php` for defaults (consumer group, retry attempts, backoff, health thresholds). The consumer itself ships with a plug-and-play engine based on `mateusjunges/laravel-kafka` — make sure the `rdkafka` PHP extension is installed and your broker settings are configured in the host app's `config/kafka.php`.
 

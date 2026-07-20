@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- README: point to the new companion package [`gurento/kafka-producer-filament`](https://packagist.org/packages/gurento/kafka-producer-filament) for producing messages (previously a producer resource lived in this package; it now ships as its own dedicated package)
 - Laravel 13 support: `illuminate/support` constraint widened to `^11.0|^12.0|^13.0`
 - New `SECURITY.md` with supported versions, private vulnerability reporting, and operational security notes
 - LICENSE file added
